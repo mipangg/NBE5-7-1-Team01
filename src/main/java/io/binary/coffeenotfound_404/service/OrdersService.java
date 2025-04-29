@@ -50,7 +50,7 @@ public class OrdersService {
         return ordersList;
     }
 
-    public Orders updateByEmailAndOrdersId(String email, Long ordersId, OrdersUpdateRequest request) {
+    public Orders updateByEmailAndId(String email, Long ordersId, OrdersUpdateRequest request) {
         List<Orders> ordersList = getByEmail(email);
 
         Orders orders = getOrderById(ordersId, ordersList);
@@ -59,6 +59,22 @@ public class OrdersService {
         orders.setZipCode(request.getZipCode());
 
         return orders;
+    }
+
+    public void deleteByEmailAndId(String email, Long ordersId) {
+        List<Orders> ordersList = getByEmail(email);
+        Orders orders = getOrderById(ordersId, ordersList);
+
+        updateOrderItemsStock(orders);
+
+        ordersRepository.delete(orders);
+    }
+
+    private static void updateOrderItemsStock(Orders orders) {
+        List<OrderItems> orderItemsList = orders.getOrderItemsList();
+        for (OrderItems orderItems : orderItemsList) {
+            orderItems.getItems().setStock(orderItems.getItems().getStock() + orderItems.getQuantity());
+        }
     }
 
     private static Orders getOrderById(Long ordersId, List<Orders> ordersList) {
