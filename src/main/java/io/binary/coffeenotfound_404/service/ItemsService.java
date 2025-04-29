@@ -6,8 +6,10 @@ import io.binary.coffeenotfound_404.domain.ItemImages;
 import io.binary.coffeenotfound_404.domain.Items;
 import io.binary.coffeenotfound_404.domain.ItemsCategory;
 import io.binary.coffeenotfound_404.dto.ItemsRequest;
+import io.binary.coffeenotfound_404.dto.ItemsUpdateRequest;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +41,18 @@ public class ItemsService {
 
     public List<Items> get() {
         return itemsRepository.findAll();
+    }
+
+    public Items update(Long itemsId, ItemsUpdateRequest request) {
+        Items items = itemsRepository.findById(itemsId).orElseThrow(NoSuchElementException::new);
+
+        items.setName(request.getName());
+        items.setPrice(request.getPrice());
+        items.setStock(request.getStock());
+
+        ItemsCategory category = ItemsCategory.from(request.getCategory());
+        items.setCategory(category);
+
+        return items;
     }
 }
