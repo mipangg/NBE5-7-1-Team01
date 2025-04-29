@@ -70,6 +70,10 @@ public class OrdersService {
         ordersRepository.delete(orders);
     }
 
+    public List<Orders> findAll() {
+        return ordersRepository.findAll();
+    }
+
     private static void updateOrderItemsStock(Orders orders) {
         List<OrderItems> orderItemsList = orders.getOrderItemsList();
         for (OrderItems orderItems : orderItemsList) {
