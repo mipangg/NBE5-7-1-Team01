@@ -26,4 +26,7 @@ public class ItemImages {
     @Column(nullable = false)
     private String imageUrl;
 
+    public ItemImages(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
