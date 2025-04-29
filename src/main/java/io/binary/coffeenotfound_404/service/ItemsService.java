@@ -43,8 +43,9 @@ public class ItemsService {
         return itemsRepository.findAll();
     }
 
-    public Items update(Long itemsId, ItemsUpdateRequest request) {
-        Items items = itemsRepository.findById(itemsId).orElseThrow(NoSuchElementException::new);
+    public Items updateById(Long itemsId, ItemsUpdateRequest request) {
+        Items items = itemsRepository.findById(itemsId)
+                .orElseThrow(() -> new NoSuchElementException("입력된 ID의 상품이 존재하지 않습니다."));
 
         items.setName(request.getName());
         items.setPrice(request.getPrice());
@@ -54,5 +55,12 @@ public class ItemsService {
         items.setCategory(category);
 
         return items;
+    }
+
+    public void deleteById(Long itemsId) {
+        Items items = itemsRepository.findById(itemsId)
+                .orElseThrow(() -> new NoSuchElementException("입력된 ID의 상품이 존재하지 않습니다."));
+
+        itemsRepository.delete(items);
     }
 }
