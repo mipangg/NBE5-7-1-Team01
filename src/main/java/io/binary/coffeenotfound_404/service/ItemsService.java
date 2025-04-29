@@ -7,6 +7,7 @@ import io.binary.coffeenotfound_404.domain.Items;
 import io.binary.coffeenotfound_404.domain.ItemsCategory;
 import io.binary.coffeenotfound_404.dto.ItemsRequest;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,5 +35,9 @@ public class ItemsService {
         itemsRepository.save(items);
 
         return items;
+    }
+
+    public List<Items> get() {
+        return itemsRepository.findAll();
     }
 }
