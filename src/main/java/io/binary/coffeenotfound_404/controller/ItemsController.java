@@ -36,6 +36,11 @@ public class ItemsController {
         return ResponseEntity.ok(itemsService.get());
     }
 
+    @GetMapping("/{itemsId}")
+    public ResponseEntity<Items> read(@PathVariable Long itemsId) {
+        return ResponseEntity.ok(itemsService.getById(itemsId));
+    }
+
     @PutMapping("/{itemsId}")
     public ResponseEntity<Items> update(@PathVariable Long itemsId, @RequestBody ItemsUpdateRequest request) {
 

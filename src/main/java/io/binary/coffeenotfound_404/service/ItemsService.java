@@ -1,8 +1,6 @@
 package io.binary.coffeenotfound_404.service;
 
-import io.binary.coffeenotfound_404.dao.ItemImagesRepository;
 import io.binary.coffeenotfound_404.dao.ItemsRepository;
-import io.binary.coffeenotfound_404.domain.ItemImages;
 import io.binary.coffeenotfound_404.domain.Items;
 import io.binary.coffeenotfound_404.domain.ItemsCategory;
 import io.binary.coffeenotfound_404.dto.ItemsRequest;
@@ -19,11 +17,9 @@ import org.springframework.stereotype.Service;
 public class ItemsService {
 
     private final ItemsRepository itemsRepository;
-    private final ItemImagesRepository itemImagesRepository;
 
     public Items save(ItemsRequest request) {
 
-        ItemImages img = itemImagesRepository.save(new ItemImages(request.getImageUrl()));
         ItemsCategory category = ItemsCategory.from(request.getCategory());
 
         Items items = Items.builder()
@@ -31,7 +27,7 @@ public class ItemsService {
                 .price(request.getPrice())
                 .stock(request.getStock())
                 .category(category)
-                .images(img)
+                .imageUrl(request.getImageUrl())
                 .build();
 
         itemsRepository.save(items);
@@ -41,6 +37,11 @@ public class ItemsService {
 
     public List<Items> get() {
         return itemsRepository.findAll();
+    }
+
+    public Items getById(Long itemsId) {
+        return itemsRepository.findById(itemsId)
+                .orElseThrow(() -> new NoSuchElementException("입력된 ID의 상품이 존재하지 않습니다."));
     }
 
     public Items updateById(Long itemsId, ItemsUpdateRequest request) {

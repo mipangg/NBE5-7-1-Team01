@@ -5,11 +5,12 @@ import java.util.NoSuchElementException;
 public enum ItemsCategory {
     COFFEE_BEAN,
     COFFEE,
-    FOOD;
+    FOOD,
+    GOODS;
 
     public static ItemsCategory from(String value) {
         try {
-            return ItemsCategory.valueOf(value.trim().toUpperCase());
+            return ItemsCategory.valueOf(value.trim().replace(' ', '_').toUpperCase());
         } catch (Exception e) {
             throw new NoSuchElementException("유효하지 않은 카테고리 " + value);
         }

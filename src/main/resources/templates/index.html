@@ -156,8 +156,8 @@
             <input type="text" class="form-control" id="address" required>
           </div>
           <div class="mb-3">
-            <label for="postCode" class="form-label">우편번호</label>
-            <input type="text" class="form-control" id="postCode" required>
+            <label for="zipCode" class="form-label">우편번호</label>
+            <input type="text" class="form-control" id="zipCode" required>
           </div>
         </form>
         <div class="row pt-2 pb-2 border-top">
@@ -186,7 +186,7 @@
           <!-- 기존 내용 유지 -->
           <p><strong>이메일:</strong> <span id="modal-email" class="text-muted"></span></p>
           <p><strong>주소:</strong> <span id="modal-address" class="text-muted"></span></p>
-          <p><strong>우편번호:</strong> <span id="modal-postCode" class="text-muted"></span></p>
+          <p><strong>우편번호:</strong> <span id="modal-zipCode" class="text-muted"></span></p>
           <hr>
           <div id="modal-order-items" class="mt-3" style="font-family: 'Courier New', monospace; line-height: 1.6;"></div>
           <hr>
@@ -296,17 +296,17 @@
     ).join('');
   }
 
-  async function addToCart(itemId) {
+  async function addToCart(itemsId) {
     try {
-      const response = await fetch(`/items/${itemId}`);
+      const response = await fetch(`/items/${itemsId}`);
       if (!response.ok) throw new Error('상품 조회 실패');
       const item = await response.json();
       if (item.stock <= 0) throw new Error('품절된 상품입니다');
-      if (cart[itemId]) {
-        if (cart[itemId].quantity >= item.stock) throw new Error('재고가 부족합니다');
-        cart[itemId].quantity += 1;
+      if (cart[itemsId]) {
+        if (cart[itemsId].quantity >= item.stock) throw new Error('재고가 부족합니다');
+        cart[itemsId].quantity += 1;
       } else {
-        cart[itemId] = { ...item, quantity: 1 };
+        cart[itemsId] = { ...item, quantity: 1 };
       }
       updateSummary();
       showToast(`${item.name}이 장바구니에 추가되었습니다`);
@@ -340,21 +340,21 @@
     totalElement.textContent = `${total.toLocaleString()}원`;
   }
 
-  function changeQuantity(itemId, newQuantity) {
+  function changeQuantity(itemsId, newQuantity) {
     if (newQuantity <= 0) {
-      delete cart[itemId];
+      delete cart[itemsId];
     } else {
-      if (newQuantity > cart[itemId].stock) {
+      if (newQuantity > cart[itemsId].stock) {
         showToast('재고가 부족합니다', 'danger');
         return;
       }
-      cart[itemId].quantity = newQuantity;
+      cart[itemsId].quantity = newQuantity;
     }
     updateSummary();
   }
 
-  function removeFromCart(itemId) {
-    delete cart[itemId];
+  function removeFromCart(itemsId) {
+    delete cart[itemsId];
     updateSummary();
   }
 
@@ -373,8 +373,8 @@
   document.getElementById('checkout-btn').addEventListener('click', () => {
     const email = document.getElementById('email').value;
     const address = document.getElementById('address').value;
-    const postCode = document.getElementById('postCode').value;
-    if (!email || !address || !postCode) {
+    const zipCode = document.getElementById('zipCode').value;
+    if (!email || !address || !zipCode) {
       showToast('모든 정보를 입력해주세요', 'danger');
       return;
     }
@@ -386,7 +386,7 @@
     // 모달에 값 채우기
     document.getElementById('modal-email').textContent = email;
     document.getElementById('modal-address').textContent = address;
-    document.getElementById('modal-postCode').textContent = postCode;
+    document.getElementById('modal-zipCode').textContent = zipCode;
     document.getElementById('modal-total-price').textContent = document.getElementById('total-price').textContent;
 
     const itemsHtml = Object.values(cart).map(item =>
@@ -402,20 +402,18 @@
   document.getElementById('confirm-order-btn').addEventListener('click', async () => {
     const email = document.getElementById('email').value;
     const address = document.getElementById('address').value;
-    const postCode = document.getElementById('postCode').value;
+    const zipCode = document.getElementById('zipCode').value;
 
     try {
       const orderResponse = await fetch('/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email, address, postCode,
+          email, address, zipCode,
           orderItemsList: Object.values(cart).map(item => ({
-            itemId: item.id,
-            quantity: item.quantity,
-            price: item.price
-          })),
-          totalPrice: Object.values(cart).reduce((sum, item) => sum + item.price * item.quantity, 0)
+            itemsId: item.id,
+            quantity: item.quantity
+          }))
         })
       });
 
@@ -519,7 +517,7 @@
               </div>
             </div>
             <div class="order-details mt-2">
-              <p class="mb-1"><strong>주소:</strong> ${order.address} (${order.postCode || order.postcode})</p>
+              <p class="mb-1"><strong>주소:</strong> ${order.address} (${order.zipCode || order.zipCode})</p>
               <div class="order-items mt-2">
                 ${renderOrderItems(order)}
               </div>
@@ -531,7 +529,7 @@
               </div>
               <div class="mb-2">
                 <label class="form-label">우편번호</label>
-                <input type="text" class="form-control postcode-input" value="${order.postCode || order.postcode}">
+                <input type="text" class="form-control zipCode-input" value="${order.zipCode || order.zipCode}">
               </div>
               <div class="d-flex justify-content-end gap-2">
                 <button class="btn btn-sm btn-outline-secondary cancel-edit-btn">취소</button>
@@ -573,6 +571,7 @@
         return total.toLocaleString();
       }
 
+
       // 수정 버튼 이벤트 리스너 추가
       document.querySelectorAll('.edit-order-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -602,7 +601,7 @@
           const orderItem = e.target.closest('.order-item');
           const orderId = orderItem.getAttribute('data-order-id');
           const address = orderItem.querySelector('.address-input').value;
-          const postCode = orderItem.querySelector('.postcode-input').value;
+          const zipCode = orderItem.querySelector('.zipCode-input').value;
           const email = document.getElementById('search-email').value.trim();
 
           try {
@@ -611,7 +610,7 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 address,
-                postCode
+                zipCode
               })
             });
 
