@@ -115,4 +115,15 @@ public class OrdersService {
         }
         return orderItemsList;
     }
+
+    public void deleteById(Long ordersId) {
+        Orders orders = ordersRepository.findById(ordersId)
+                .orElseThrow(() -> new NoSuchElementException("입력된 ID의 주문이 존재하지 않습니다."));
+
+        if (orders.isDelivered()) {
+            ordersRepository.delete(orders);
+        } else {
+            throw new RuntimeException("아직 배송되지 않은 상품입니다.");
+        }
+    }
 }
