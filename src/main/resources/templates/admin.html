@@ -128,6 +128,7 @@
                 <input type="number" id="item-price" placeholder="가격" class="form-control mb-2">
                 <input type="number" id="item-stock" placeholder="재고수량" class="form-control mb-2" min="0">
                 <select type="text" id="item-category" class="form-control mb-2">
+                    <option value="" selected disabled hidden>카테고리</option>
                     <option th:value="COFFEE_BEAN">원두</option>
                     <option th:value="COFFEE">커피</option>
                     <option th:value="FOOD">푸드</option>
@@ -211,19 +212,19 @@
     }
 
     // 메뉴 아이템 수정
-    function editMenuItem(itemId) {
+    function editMenuItem(itemsId) {
         if (currentEditIndex !== null) {
             alert("수정을 완료해주세요.");
             return;
         }
 
-        const row = document.querySelector(`tr td button[onclick="editMenuItem(${itemId})"]`).parentElement.parentElement;
+        const row = document.querySelector(`tr td button[onclick="editMenuItem(${itemsId})"]`).parentElement.parentElement;
         row.classList.add('modified-row');
 
-        const nameCell = document.getElementById(`name-${itemId}`);
-        const priceCell = document.getElementById(`price-${itemId}`);
-        const stockCell = document.getElementById(`stock-${itemId}`);
-        const categoryCell = document.getElementById(`category-${itemId}`);
+        const nameCell = document.getElementById(`name-${itemsId}`);
+        const priceCell = document.getElementById(`price-${itemsId}`);
+        const stockCell = document.getElementById(`stock-${itemsId}`);
+        const categoryCell = document.getElementById(`category-${itemsId}`);
 
         nameCell.contentEditable = "true";
         priceCell.contentEditable = "true";
@@ -232,21 +233,21 @@
 
         const editButton = row.querySelector('button.btn-warning');
         editButton.innerText = "저장";
-        editButton.setAttribute('onclick', `saveMenuItem(${itemId})`);
+        editButton.setAttribute('onclick', `saveMenuItem(${itemsId})`);
 
-        currentEditIndex = itemId;
+        currentEditIndex = itemsId;
         lockSidebar(true);
     }
 
     // 메뉴 아이템 저장
-    async function saveMenuItem(itemId) {
+    async function saveMenuItem(itemsId) {
 
 
-        const row = document.querySelector(`tr td button[onclick="saveMenuItem(${itemId})"]`).parentElement.parentElement;
-        const nameCell = document.getElementById(`name-${itemId}`);
-        const priceCell = document.getElementById(`price-${itemId}`);
-        const stockCell = document.getElementById(`stock-${itemId}`);
-        const categoryCell = document.getElementById(`category-${itemId}`);
+        const row = document.querySelector(`tr td button[onclick="saveMenuItem(${itemsId})"]`).parentElement.parentElement;
+        const nameCell = document.getElementById(`name-${itemsId}`);
+        const priceCell = document.getElementById(`price-${itemsId}`);
+        const stockCell = document.getElementById(`stock-${itemsId}`);
+        const categoryCell = document.getElementById(`category-${itemsId}`);
         const imageCell = row.querySelector('td img');
         const imageUrl = imageCell?.getAttribute('src');
 
@@ -260,7 +261,7 @@
 
 
         try {
-            const response = await fetch(`/items/${itemId}`, {
+            const response = await fetch(`/items/${itemsId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -289,7 +290,7 @@
     }
 
     // 메뉴 아이템 삭제 (추가된 기능)
-    async function deleteMenuItem(itemId) {
+    async function deleteMenuItem(itemsId) {
         if (currentEditIndex !== null) {
             alert("수정을 완료해주세요.");
             return;
@@ -300,7 +301,7 @@
         }
 
         try {
-            const response = await fetch(`/items/${itemId}`, {
+            const response = await fetch(`/items/${itemsId}`, {
                 method: 'DELETE'
             });
 
@@ -449,7 +450,7 @@
           <p><strong>이메일:</strong> ${order.email}</p>
           <p><strong>주문일자:</strong> ${formattedDate}</p>
           <p><strong>주소:</strong> ${order.address}</p>
-          <p><strong>우편번호:</strong> ${order.postCode}</p>
+          <p><strong>우편번호:</strong> ${order.zipCode}</p>
           <div class="mt-2 mb-2">
             <strong>주문 상품:</strong>
             <div class="ps-3">${itemsList}</div>

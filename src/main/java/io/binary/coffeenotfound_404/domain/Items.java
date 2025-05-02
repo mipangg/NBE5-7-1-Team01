@@ -1,6 +1,5 @@
 package io.binary.coffeenotfound_404.domain;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,8 +7,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -45,18 +42,17 @@ public class Items {
     @Enumerated(EnumType.STRING)
     private ItemsCategory Category;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "item_images_id", nullable = false)
-    private ItemImages images;
+    @Column(columnDefinition = "LONGTEXT")
+    private String imageUrl;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Builder
-    public Items(String name, Integer price, Integer stock, ItemsCategory category, ItemImages images) {
+    public Items(String name, Integer price, Integer stock, ItemsCategory category, String imageUrl) {
         this.name = name;
         this.price = price;
         this.stock = stock;
         Category = category;
-        this.images = images;
+        this.imageUrl = imageUrl;
     }
 }
