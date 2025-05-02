@@ -47,4 +47,4 @@ Thumbs.db
 desktop.ini
 
 # Spring Boot의 데이터베이스 정보가 포함된 파일을 무시
-src/main/resources/application.yml
+**/src/main/resources/application.yml
